@@ -21,6 +21,7 @@ namespace AutoBuySJC
     {
         private System.Threading.Timer timer;
         public string opt_value;
+        public string sl_max;
         public fMain()
         {
             InitializeComponent();
@@ -39,7 +40,6 @@ namespace AutoBuySJC
             {
                 MessageBox.Show("Không thể lấy thông tin key!");
             }
-            cbxRegion.SelectedIndex = 0;
             btnOpenAccount.Enabled = false;
             btnStart.Enabled = false;
             btnHenGio.Enabled = false;
@@ -189,6 +189,7 @@ namespace AutoBuySJC
                     // Thêm các tiêu đề cột cố định
                     table.Columns.Add("Name");
                     table.Columns.Add("CCCD");
+                    table.Columns.Add("Khuvuc");
                     table.Columns.Add("Chinhanh");
                     table.Columns.Add("Trạng thái");
 
@@ -210,25 +211,8 @@ namespace AutoBuySJC
             }
         }
 
-        async Task GetCookieAsync(string name, string cccd, string mach, DataGridViewRow row)
+        async Task GetCookieAsync(string name, string cccd, string makv, string mach, DataGridViewRow row)
         {
-            
-            this.Invoke(new Action(() =>
-            {
-                switch (cbxRegion.SelectedIndex)
-                {
-                    case 0:
-                        opt_value = "1";
-                        break;
-                    case 1:
-                        opt_value = "42";
-                        break;
-                    default:
-                        opt_value = "1";
-                        break;
-                }
-            }));
-
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -296,7 +280,7 @@ namespace AutoBuySJC
                         // Nếu date_gd bằng tommorrow, gọi hàm Request
                         if (date_gd == tommorrow)
                         {
-                            this.Invoke(new Action(() => Request(token, ck, mach, date, row)));
+                            this.Invoke(new Action(() => Request(token, ck, mach, "1", date, row)));
                         }
 
                         Thread.Sleep(500);
@@ -308,7 +292,7 @@ namespace AutoBuySJC
                     // Thực hiện chức năng Spam
                     for (int i = 0; i < numSpam.Value; i++)
                     {
-                        this.Invoke(new Action(() => Request(token, ck, mach, date, row)));
+                        this.Invoke(new Action(() => Request(token, ck, mach, "1", date, row)));
                         Thread.Sleep(1000);
                     }
                 });
@@ -341,7 +325,7 @@ namespace AutoBuySJC
                     // Nếu date_gd bằng tommorrow, gọi hàm Request
                     if (date_gd == tommorrow)
                     {
-                        this.Invoke(new Action(() => Request(token, ck, mach, date, row)));
+                        this.Invoke(new Action(() => Request(token, ck, mach, "1", date, row)));
                     }
 
                     Thread.Sleep(500);
@@ -349,9 +333,11 @@ namespace AutoBuySJC
             }
             else if (cbSpam.Checked)
             {
+                // Thực hiện chức năng Spam
                 for (int i = 0; i < numSpam.Value; i++)
                 {
-                    Request(token, ck, mach, date, row);
+                    this.Invoke(new Action(() => Request(token, ck, mach, "1", date, row)));
+                    Thread.Sleep(1000);
                 }
             }
             else if (cbReloadRegion.Checked)
@@ -364,10 +350,10 @@ namespace AutoBuySJC
                     {
                         wait.Until(ExpectedConditions.ElementIsVisible(By.Id("id_area")));
 
-                        var selectElement = new SelectElement(driver.FindElement(By.Id("id_area")));
-                        foreach (var option in selectElement.Options)
+                        var select_kv = new SelectElement(driver.FindElement(By.Id("id_area")));
+                        foreach (var option in select_kv.Options)
                         {
-                            if (option.GetAttribute("value") == opt_value)
+                            if (option.GetAttribute("value") == makv)
                             {
                                 optionFound = true;
                                 break;
@@ -381,7 +367,44 @@ namespace AutoBuySJC
                         }
                         else
                         {
-                            this.Invoke(new Action(() => Request(token, ck, mach, date, row)));
+
+                            bool cn_open = false;
+                            while (!cn_open)
+                            {
+                                try
+                                {
+                                    select_kv.SelectByValue(makv);
+                                    wait.Until(ExpectedConditions.ElementIsVisible(By.Id("id_store")));
+                                    var select_cn = new SelectElement(driver.FindElement(By.Id("id_store")));
+                                    foreach (var option in select_cn.Options)
+                                    {
+                                        if (option.GetAttribute("value") == mach)
+                                        {
+                                            select_cn.SelectByValue(mach);
+                                            var sl = wait.Until(ExpectedConditions.ElementIsVisible(By.Id("txtSoLuongToiDa")));
+                                            sl_max = sl.Text;
+                                            cn_open = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!optionFound)
+                                    {
+                                        driver.Navigate().Refresh();
+                                        await Task.Delay(1000);
+                                    }
+                                    else
+                                    {
+                                        this.Invoke(new Action(() => Request(token, ck, mach, sl_max, date, row)));
+                                    }
+                                }
+                                catch (NoSuchElementException)
+                                {
+                                    driver.Navigate().Refresh();
+                                    await Task.Delay(1000);
+                                }
+                            }
+
 
                         }
                     }
@@ -394,14 +417,14 @@ namespace AutoBuySJC
             }
             else
             {
-                Request(token, ck, mach, date, row);
+                Request(token, ck, mach, date, "1", row);
             }
 
             driver.Close();
             driver.Quit();
         }
 
-        async void Request(string token, string ck, string ch, string ngaygd, DataGridViewRow row)
+        async void Request(string token, string ck, string ch, string sl, string ngaygd, DataGridViewRow row)
         {
             var options = new RestClientOptions()
             {
@@ -423,7 +446,7 @@ namespace AutoBuySJC
             request.AddHeader("sec-fetch-mode", "cors");
             request.AddHeader("sec-fetch-site", "same-origin");
             request.AddHeader("x-requested-with", "XMLHttpRequest");
-            var body = string.Format("__RequestVerificationToken={0}&CuaHang={1}&SoLuong=1&NgayGiaoDich={2}&HinhThuc=1", token, ch, ngaygd);
+            var body = string.Format("__RequestVerificationToken={0}&CuaHang={1}&SoLuong={2}&NgayGiaoDich={3}&HinhThuc=1", token, ch, sl, ngaygd);
             //var body = @"__RequestVerificationToken=zuNkz5EJA4iGgrE7SBJOBV3oGPjBs9W4NWnD8zLrklZfpmi83k3X1t53xjbaoJUCh44loXK6RPEaLOyDyi-35cmrUkONw8xIjZxC1dBUTMbDpTAvlOR-evf6I3wuXFNy0&CuaHang=6&SoLuong=1&NgayGiaoDich=2024-07-01&HinhThuc=1";
             request.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
             RestResponse response = await client.ExecuteAsync(request);
@@ -442,22 +465,23 @@ namespace AutoBuySJC
         private async void button1_Click(object sender, EventArgs e)
         {
 
-            var dataGridViewData = new List<(string Name, string Cccd, string ChiNhanh, DataGridViewRow Row)>();
+            var dataGridViewData = new List<(string Name, string Cccd, string KhuVuc, string ChiNhanh, DataGridViewRow Row)>();
             foreach (DataGridViewRow row in dgvAccount.Rows)
             {
-                if (row.Cells["Name"].Value != null && row.Cells["Cccd"].Value != null && row.Cells["Chinhanh"].Value != null)
+                if (row.Cells["Name"].Value != null && row.Cells["Cccd"].Value != null && row.Cells["Chinhanh"].Value != null && row.Cells["Khuvuc"].Value != null)
                 {
                     string name = row.Cells["Name"].Value.ToString();
                     string cccd = row.Cells["Cccd"].Value.ToString();
+                    string khuvuc = row.Cells["Khuvuc"].Value.ToString();
                     string chinhanh = row.Cells["Chinhanh"].Value.ToString();
-                    dataGridViewData.Add((name, cccd, chinhanh, row));
+                    dataGridViewData.Add((name, cccd, khuvuc, chinhanh, row));
                 }
             }
             // Run GetCookie for each row in parallel
             var tasks = new List<Task>();
             foreach (var data in dataGridViewData)
             {
-                tasks.Add(Task.Run(() => GetCookieAsync(data.Name, data.Cccd, data.ChiNhanh, data.Row)));
+                tasks.Add(Task.Run(() => GetCookieAsync(data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.Row)));
             }
 
             await Task.WhenAll(tasks);
@@ -532,11 +556,6 @@ namespace AutoBuySJC
         {
             DateTime targetTime = dtHenGio.Value;
             ScheduleRunAt(targetTime);
-        }
-
-        private void cbReloadRegion_CheckedChanged(object sender, EventArgs e)
-        {
-            cbxRegion.SelectedIndex = 0;
         }
     }
 }
