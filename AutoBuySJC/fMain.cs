@@ -22,6 +22,10 @@ namespace AutoBuySJC
         private System.Threading.Timer timer;
         public string opt_value;
         public string sl_max;
+
+        public static int borderWidth;
+        public static int borderHeight;
+        public static double scale;
         public fMain()
         {
             InitializeComponent();
@@ -211,13 +215,14 @@ namespace AutoBuySJC
             }
         }
 
-        async Task GetCookieAsync(string name, string cccd, string makv, string mach, DataGridViewRow row)
+        async Task GetCookieAsync(int winWidth, int winHeight, int x, int y, string name, string cccd, string makv, string mach, DataGridViewRow row)
         {
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
 
             ChromeOptions opt = new ChromeOptions();
-            opt.AddArgument("--window-size=400,600");
+            opt.AddArguments($"--window-size={winWidth},{winHeight}");
+            opt.AddArguments($"--window-position={x},{y}");
             //opt.AddArgument("--headless");
             ChromeDriverService cService = ChromeDriverService.CreateDefaultService();
             cService.HideCommandPromptWindow = true;
@@ -417,7 +422,7 @@ namespace AutoBuySJC
             }
             else
             {
-                Request(token, ck, mach, date, "1", row);
+                Request(token, ck, mach, "1", date, row);
             }
 
             driver.Close();
@@ -479,13 +484,38 @@ namespace AutoBuySJC
             }
             // Run GetCookie for each row in parallel
             var tasks = new List<Task>();
-            foreach (var data in dataGridViewData)
+
+            borderWidth = 250;
+            borderHeight = 400;
+            int rowCount = dgvAccount.Rows.Count;
+            if (rowCount <= 9)
             {
-                tasks.Add(Task.Run(() => GetCookieAsync(data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.Row)));
+                scale = 0.9;
+            }
+            else if (rowCount <= 12)
+            {
+                scale = 0.7;
+            }
+            else
+            {
+                scale = 1;
+            }
+
+            int columns = (int)Math.Ceiling(Math.Sqrt(rowCount));
+            int rows = (int)Math.Ceiling((double)rowCount / columns);
+            int windowWidth = borderWidth;
+            int windowHeight = (int)(borderHeight * scale);
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                var data = dataGridViewData[i];
+                int xPosition = (i % columns) * windowWidth;
+                int yPosition = (i / columns) * windowHeight;
+
+                tasks.Add(Task.Run(() => GetCookieAsync(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.Row)));
             }
 
             await Task.WhenAll(tasks);
-            //MessageBox.Show("XONG RỒI!");
         }
 
         private void button2_Click(object sender, EventArgs e)
