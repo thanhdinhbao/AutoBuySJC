@@ -58,11 +58,11 @@ namespace AutoBuySJC
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -147,14 +147,32 @@ namespace AutoBuySJC
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Hướng dẫn";
             // 
-            // label3
+            // label7
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 21);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(101, 13);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "- Chọn file tài khoản";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(17, 133);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(321, 13);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "- Reload đến khi mở khu vực: Load lại trang đến khi chi nhánh mở";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(17, 109);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(197, 13);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "- Hẹn giờ: Hẹn giờ để chương trình chạy";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(17, 84);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(396, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "- Spam: Spam mua từng tài khoản lên SJC (nên để 2-3 lần tránh bị khóa tài khoản)";
             // 
             // label4
             // 
@@ -166,32 +184,14 @@ namespace AutoBuySJC
             this.label4.Text = "- F5 đến khi sang ngày mới: Load lại đến khi SJC đổi ngày sang ngày mới\r\n(áp dụng" +
     " khi 12h)";
             // 
-            // label5
+            // label3
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 84);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(396, 13);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "- Spam: Spam mua từng tài khoản lên SJC (nên để 2-3 lần tránh bị khóa tài khoản)";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 109);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(197, 13);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "- Hẹn giờ: Hẹn giờ để chương trình chạy";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(17, 133);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(313, 13);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "- Reload đến khi mở khu vực: Load lại trang đến khi khu vực mở";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(17, 21);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(101, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "- Chọn file tài khoản";
             // 
             // fHuongDan
             // 
