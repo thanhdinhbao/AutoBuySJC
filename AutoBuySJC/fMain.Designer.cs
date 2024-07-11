@@ -47,11 +47,19 @@ namespace AutoBuySJC
             this.cbSpam = new System.Windows.Forms.CheckBox();
             this.numSpam = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numDelay = new System.Windows.Forms.NumericUpDown();
             this.cbReloadRegion = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.numRepeat = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAccount)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSpam)).BeginInit();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numRepeat)).BeginInit();
             this.SuspendLayout();
             // 
             // btnStart
@@ -201,14 +209,14 @@ namespace AutoBuySJC
             // 
             // numSpam
             // 
-            this.numSpam.Location = new System.Drawing.Point(65, 42);
+            this.numSpam.Location = new System.Drawing.Point(65, 40);
             this.numSpam.Maximum = new decimal(new int[] {
             20,
             0,
             0,
             0});
             this.numSpam.Minimum = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             0});
@@ -216,39 +224,125 @@ namespace AutoBuySJC
             this.numSpam.Size = new System.Drawing.Size(45, 20);
             this.numSpam.TabIndex = 19;
             this.numSpam.Value = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             0});
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.numRepeat);
+            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.numDelay);
             this.groupBox2.Controls.Add(this.cbReloadRegion);
             this.groupBox2.Controls.Add(this.cbReload);
             this.groupBox2.Controls.Add(this.numSpam);
             this.groupBox2.Controls.Add(this.cbSpam);
-            this.groupBox2.Location = new System.Drawing.Point(358, 324);
+            this.groupBox2.Location = new System.Drawing.Point(358, 305);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(162, 100);
+            this.groupBox2.Size = new System.Drawing.Size(162, 151);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Tùy chọn";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 96);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(61, 13);
+            this.label3.TabIndex = 22;
+            this.label3.Text = "Lặp lại sau:";
+            // 
+            // numDelay
+            // 
+            this.numDelay.Location = new System.Drawing.Point(66, 92);
+            this.numDelay.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.numDelay.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numDelay.Name = "numDelay";
+            this.numDelay.Size = new System.Drawing.Size(44, 20);
+            this.numDelay.TabIndex = 21;
+            this.numDelay.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             // 
             // cbReloadRegion
             // 
             this.cbReloadRegion.AutoSize = true;
             this.cbReloadRegion.Location = new System.Drawing.Point(6, 66);
             this.cbReloadRegion.Name = "cbReloadRegion";
-            this.cbReloadRegion.Size = new System.Drawing.Size(145, 17);
+            this.cbReloadRegion.Size = new System.Drawing.Size(134, 17);
             this.cbReloadRegion.TabIndex = 20;
-            this.cbReloadRegion.Text = "Reload đến khi phiên mở";
+            this.cbReloadRegion.Text = "Reload đến khi CN mở";
             this.cbReloadRegion.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(112, 96);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(26, 13);
+            this.label4.TabIndex = 21;
+            this.label4.Text = "giây";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(112, 122);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(21, 13);
+            this.label5.TabIndex = 23;
+            this.label5.Text = "lần";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 122);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(57, 13);
+            this.label6.TabIndex = 25;
+            this.label6.Text = "Số lần lặp:";
+            // 
+            // numRepeat
+            // 
+            this.numRepeat.Location = new System.Drawing.Point(66, 118);
+            this.numRepeat.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.numRepeat.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numRepeat.Name = "numRepeat";
+            this.numRepeat.Size = new System.Drawing.Size(44, 20);
+            this.numRepeat.TabIndex = 24;
+            this.numRepeat.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
             // 
             // fMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(532, 481);
+            this.ClientSize = new System.Drawing.Size(532, 482);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.linkLabel1);
@@ -271,6 +365,8 @@ namespace AutoBuySJC
             ((System.ComponentModel.ISupportInitialize)(this.numSpam)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numRepeat)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -296,6 +392,12 @@ namespace AutoBuySJC
         private System.Windows.Forms.NumericUpDown numSpam;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox cbReloadRegion;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numDelay;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown numRepeat;
+        private System.Windows.Forms.Label label4;
     }
 }
 

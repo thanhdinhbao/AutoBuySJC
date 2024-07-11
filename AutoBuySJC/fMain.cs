@@ -306,7 +306,7 @@ namespace AutoBuySJC
             }
             else if (cbReload.Checked)
             {
-                // Thực hiện chức năng Reload\
+                // Thực hiện chức năng Reload
                 string date_gd = string.Empty;
                 try
                 {
@@ -467,9 +467,8 @@ namespace AutoBuySJC
 
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        async Task RunAll()
         {
-
             var dataGridViewData = new List<(string Name, string Cccd, string KhuVuc, string ChiNhanh, DataGridViewRow Row)>();
             foreach (DataGridViewRow row in dgvAccount.Rows)
             {
@@ -503,19 +502,30 @@ namespace AutoBuySJC
 
             int columns = (int)Math.Ceiling(Math.Sqrt(rowCount));
             int rows = (int)Math.Ceiling((double)rowCount / columns);
-            int windowWidth = borderWidth;
+            int windowWidth = (int)(borderWidth * scale);
             int windowHeight = (int)(borderHeight * scale);
 
             for (int i = 0; i < rowCount; i++)
             {
                 var data = dataGridViewData[i];
-                int xPosition = (i % columns) * windowWidth;
-                int yPosition = (i / columns) * windowHeight;
+                int xPosition = (i % columns) * (windowWidth + borderWidth);
+                int yPosition = (i / columns) * (windowHeight);
 
                 tasks.Add(Task.Run(() => GetCookieAsync(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.Row)));
             }
 
             await Task.WhenAll(tasks);
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < numRepeat.Value; i++)
+            {
+                await RunAll();
+                int time_sleep = (int)numDelay.Value * 1000;
+                await Task.Delay(time_sleep);
+            }
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -565,16 +575,12 @@ namespace AutoBuySJC
         private void button4_Click(object sender, EventArgs e)
         {
             Process.Start("notepad.exe", txtPath.Text);
-
-
             Process notepadProcess = new Process();
             notepadProcess.StartInfo.FileName = "notepad.exe";
             notepadProcess.StartInfo.Arguments = txtPath.Text;
             notepadProcess.EnableRaisingEvents = true;
             notepadProcess.Exited += NotepadProcess_Exited;
-
             notepadProcess.Start();
-
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
