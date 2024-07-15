@@ -47,19 +47,19 @@ namespace AutoBuySJC
             this.cbSpam = new System.Windows.Forms.CheckBox();
             this.numSpam = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.numDelay = new System.Windows.Forms.NumericUpDown();
-            this.cbReloadRegion = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.numRepeat = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numDelay = new System.Windows.Forms.NumericUpDown();
+            this.cbReloadRegion = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAccount)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSpam)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRepeat)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
             this.SuspendLayout();
             // 
             // btnStart
@@ -248,56 +248,6 @@ namespace AutoBuySJC
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Tùy chọn";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 96);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(61, 13);
-            this.label3.TabIndex = 22;
-            this.label3.Text = "Lặp lại sau:";
-            // 
-            // numDelay
-            // 
-            this.numDelay.Location = new System.Drawing.Point(66, 92);
-            this.numDelay.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.numDelay.Minimum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numDelay.Name = "numDelay";
-            this.numDelay.Size = new System.Drawing.Size(44, 20);
-            this.numDelay.TabIndex = 21;
-            this.numDelay.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
-            // cbReloadRegion
-            // 
-            this.cbReloadRegion.AutoSize = true;
-            this.cbReloadRegion.Location = new System.Drawing.Point(6, 66);
-            this.cbReloadRegion.Name = "cbReloadRegion";
-            this.cbReloadRegion.Size = new System.Drawing.Size(134, 17);
-            this.cbReloadRegion.TabIndex = 20;
-            this.cbReloadRegion.Text = "Reload đến khi CN mở";
-            this.cbReloadRegion.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(112, 96);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(26, 13);
-            this.label4.TabIndex = 21;
-            this.label4.Text = "giây";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -338,6 +288,56 @@ namespace AutoBuySJC
             0,
             0});
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(112, 96);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(26, 13);
+            this.label4.TabIndex = 21;
+            this.label4.Text = "giây";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 96);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(61, 13);
+            this.label3.TabIndex = 22;
+            this.label3.Text = "Lặp lại sau:";
+            // 
+            // numDelay
+            // 
+            this.numDelay.Location = new System.Drawing.Point(66, 92);
+            this.numDelay.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.numDelay.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numDelay.Name = "numDelay";
+            this.numDelay.Size = new System.Drawing.Size(44, 20);
+            this.numDelay.TabIndex = 21;
+            this.numDelay.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // cbReloadRegion
+            // 
+            this.cbReloadRegion.AutoSize = true;
+            this.cbReloadRegion.Location = new System.Drawing.Point(6, 66);
+            this.cbReloadRegion.Name = "cbReloadRegion";
+            this.cbReloadRegion.Size = new System.Drawing.Size(134, 17);
+            this.cbReloadRegion.TabIndex = 20;
+            this.cbReloadRegion.Text = "Reload đến khi CN mở";
+            this.cbReloadRegion.UseVisualStyleBackColor = true;
+            // 
             // fMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -358,15 +358,15 @@ namespace AutoBuySJC
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "fMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Auto Buy Gold SJC v1.4";
+            this.Text = "Auto Buy Gold SJC v1.5";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAccount)).EndInit();
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numSpam)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRepeat)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
