@@ -358,7 +358,7 @@ namespace AutoBuySJC
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "fMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Auto Buy Gold SJC v1.5";
+            this.Text = "Auto Buy Gold SJC v1.6";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAccount)).EndInit();
             this.groupBox1.ResumeLayout(false);
