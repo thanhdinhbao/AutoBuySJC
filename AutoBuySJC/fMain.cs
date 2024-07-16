@@ -260,8 +260,8 @@ namespace AutoBuySJC
 
                 }
 
-                Thread.Sleep(1500);
-                driver.Navigate().Refresh();
+                //Thread.Sleep(5000);
+                //driver.Navigate().Refresh();
 
                 try
                 {
@@ -271,6 +271,7 @@ namespace AutoBuySJC
                 {
 
                 }
+                driver.Navigate().Refresh();
 
                 string token = (string)driver.ExecuteScript("return $('input[name=\"__RequestVerificationToken\"]').val();");
 
@@ -396,7 +397,7 @@ namespace AutoBuySJC
                             if (!optionFound)
                             {
                                 driver.Navigate().Refresh();
-                                await Task.Delay(1000);
+                                await Task.Delay(500);
                             }
                             else
                             {
@@ -475,7 +476,7 @@ namespace AutoBuySJC
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
             };
             var client = new RestClient(options);
-            var request = new RestRequest("https://tructuyen.sjc.com.vn/Home/Booking", Method.Post);
+            var request = new RestRequest("https://tructuyen.sjc.com.vn/Home/LayPhieuMuaHang", Method.Post);
             request.AddHeader("accept", "*/*");
             request.AddHeader("accept-language", "en-US,en;q=0.9,vi;q=0.8,ar;q=0.7,de;q=0.6");
             request.AddHeader("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
