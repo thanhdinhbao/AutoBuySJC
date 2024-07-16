@@ -50,8 +50,16 @@ namespace AutoBuySJC
             treeNode9,
             treeNode10});
             System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("(10)CHI NHÁNH - SJC HẢI PHÒNG");
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Hải Phòng", new System.Windows.Forms.TreeNode[] {
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("(2)Hải Phòng", new System.Windows.Forms.TreeNode[] {
             treeNode12});
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("(12)CHI NHÁNH SJC HẠ LONG");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("(13)TRUNG TÂM VÀNG BẠC ĐÁ QUÝ SJC- TRẦN HƯNG ĐẠO");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("(21) Quảng Ninh", new System.Windows.Forms.TreeNode[] {
+            treeNode14,
+            treeNode15});
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("(16)CHI NHÁNH - SJC BIÊN HÒA");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("(48)Đồng Nai", new System.Windows.Forms.TreeNode[] {
+            treeNode17});
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fHuongDan));
             this.label1 = new System.Windows.Forms.Label();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -105,11 +113,23 @@ namespace AutoBuySJC
             treeNode12.Name = "Node12";
             treeNode12.Text = "(10)CHI NHÁNH - SJC HẢI PHÒNG";
             treeNode13.Name = "Node11";
-            treeNode13.Text = "Hải Phòng";
+            treeNode13.Text = "(2)Hải Phòng";
+            treeNode14.Name = "Node1";
+            treeNode14.Text = "(12)CHI NHÁNH SJC HẠ LONG";
+            treeNode15.Name = "Node2";
+            treeNode15.Text = "(13)TRUNG TÂM VÀNG BẠC ĐÁ QUÝ SJC- TRẦN HƯNG ĐẠO";
+            treeNode16.Name = "Node0";
+            treeNode16.Text = "(21) Quảng Ninh";
+            treeNode17.Name = "Node4";
+            treeNode17.Text = "(16)CHI NHÁNH - SJC BIÊN HÒA";
+            treeNode18.Name = "Node3";
+            treeNode18.Text = "(48)Đồng Nai";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode5,
             treeNode11,
-            treeNode13});
+            treeNode13,
+            treeNode16,
+            treeNode18});
             this.treeView1.Size = new System.Drawing.Size(287, 177);
             this.treeView1.TabIndex = 1;
             // 
