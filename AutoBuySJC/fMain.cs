@@ -26,6 +26,8 @@ namespace AutoBuySJC
         public static int borderWidth;
         public static int borderHeight;
         public static double scale;
+
+        private CancellationTokenSource _cancellationTokenSource;
         public fMain()
         {
             InitializeComponent();
@@ -216,7 +218,7 @@ namespace AutoBuySJC
             }
         }
 
-        async Task GetCookieAsync(int winWidth, int winHeight, int x, int y, string name, string cccd, string makv, string mach, string pt, DataGridViewRow row)
+        private async Task GetCookieAsync(int winWidth, int winHeight, int x, int y, string name, string cccd, string makv, string mach, string pt, DataGridViewRow row, CancellationToken token)
         {
             ChromeDriver driver = null;
             try
@@ -226,7 +228,6 @@ namespace AutoBuySJC
                 ChromeOptions opt = new ChromeOptions();
                 opt.AddArguments($"--window-size={winWidth},{winHeight}");
                 opt.AddArguments($"--window-position={x},{y}");
-                //opt.AddArgument("--headless");
                 ChromeDriverService cService = ChromeDriverService.CreateDefaultService();
                 cService.HideCommandPromptWindow = true;
                 driver = new ChromeDriver(cService, opt);
@@ -260,8 +261,7 @@ namespace AutoBuySJC
 
                 }
 
-                //Thread.Sleep(5000);
-                //driver.Navigate().Refresh();
+                token.ThrowIfCancellationRequested();
 
                 try
                 {
@@ -273,8 +273,7 @@ namespace AutoBuySJC
                 }
                 driver.Navigate().Refresh();
 
-                string token = (string)driver.ExecuteScript("return $('input[name=\"__RequestVerificationToken\"]').val();");
-
+                string tokenValue = (string)driver.ExecuteScript("return $('input[name=\"__RequestVerificationToken\"]').val();");
 
                 var cookies = driver.Manage().Cookies.AllCookies;
 
@@ -284,15 +283,16 @@ namespace AutoBuySJC
                     ck += cookie.Name + "=" + cookie.Value + ";";
                 }
 
+                token.ThrowIfCancellationRequested();
 
-                //Check cả hai 
+                // Check cả hai
                 if (cbReload.Checked && cbSpam.Checked)
                 {
                     // Tạo các tác vụ song song
-                    var reloadTask = Task.Run(() =>
+                    var reloadTask = Task.Run(async () =>
                     {
-                    // Thực hiện chức năng Reload
-                    string date_gd = string.Empty;
+                        // Thực hiện chức năng Reload
+                        string date_gd = string.Empty;
                         try
                         {
                             date_gd = driver.FindElement(By.XPath("//*[@id='kt_app_content_container']/div/div/div/div/div[1]/div/h2/span")).Text;
@@ -305,31 +305,34 @@ namespace AutoBuySJC
 
                         while (date_gd != tommorrow)
                         {
-                        // Thực hiện làm mới trang (F5)
-                        driver.Navigate().Refresh();
+                            // Thực hiện làm mới trang (F5)
+                            driver.Navigate().Refresh();
 
-                        // Lấy lại giá trị của date_gd sau khi trang đã làm mới
-                        date_gd = driver.FindElement(By.XPath("//*[@id='kt_app_content_container']/div/div/div/div/div[1]/div/h2/span")).Text;
+                            // Lấy lại giá trị của date_gd sau khi trang đã làm mới
+                            date_gd = driver.FindElement(By.XPath("//*[@id='kt_app_content_container']/div/div/div/div/div[1]/div/h2/span")).Text;
 
-                        // Nếu date_gd bằng tommorrow, gọi hàm Request
-                        if (date_gd == tommorrow)
+                            // Nếu date_gd bằng tommorrow, gọi hàm Request
+                            if (date_gd == tommorrow)
                             {
-                                this.Invoke(new Action(() => Request(token, ck, mach, "1", date, pt, row)));
+                                this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
                             }
 
-                            Thread.Sleep(500);
-                        }
-                    });
+                            token.ThrowIfCancellationRequested();
 
-                    var spamTask = Task.Run(() =>
-                    {
-                    // Thực hiện chức năng Spam
-                    for (int i = 0; i < numSpam.Value; i++)
-                        {
-                            this.Invoke(new Action(() => Request(token, ck, mach, "1", date, pt, row)));
-                            Thread.Sleep(1000);
+                            await Task.Delay(500);
                         }
-                    });
+                    }, token);
+
+                    var spamTask = Task.Run(async () =>
+                    {
+                        // Thực hiện chức năng Spam
+                        for (int i = 0; i < numSpam.Value; i++)
+                        {
+                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
+                            token.ThrowIfCancellationRequested();
+                            await Task.Delay(1000);
+                        }
+                    }, token);
 
                     await Task.WhenAll(reloadTask, spamTask);
                 }
@@ -340,7 +343,6 @@ namespace AutoBuySJC
                     try
                     {
                         date_gd = driver.FindElement(By.XPath("//*[@id='kt_app_content_container']/div/div/div/div/div[1]/div/h2/span")).Text;
-
                     }
                     catch
                     {
@@ -359,10 +361,12 @@ namespace AutoBuySJC
                         // Nếu date_gd bằng tommorrow, gọi hàm Request
                         if (date_gd == tommorrow)
                         {
-                            this.Invoke(new Action(() => Request(token, ck, mach, "1", date, pt, row)));
+                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
                         }
 
-                        Thread.Sleep(500);
+                        token.ThrowIfCancellationRequested();
+
+                        await Task.Delay(500);
                     }
                 }
                 else if (cbSpam.Checked)
@@ -370,8 +374,9 @@ namespace AutoBuySJC
                     // Thực hiện chức năng Spam
                     for (int i = 0; i < numSpam.Value; i++)
                     {
-                        this.Invoke(new Action(() => Request(token, ck, mach, "1", date, pt, row)));
-                        Thread.Sleep(1000);
+                        this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
+                        token.ThrowIfCancellationRequested();
+                        await Task.Delay(1000);
                     }
                 }
                 else if (cbReloadRegion.Checked)
@@ -398,6 +403,7 @@ namespace AutoBuySJC
                             {
                                 driver.Navigate().Refresh();
                                 await Task.Delay(500);
+                                token.ThrowIfCancellationRequested();
                             }
                             else
                             {
@@ -426,34 +432,39 @@ namespace AutoBuySJC
                                         {
                                             driver.Navigate().Refresh();
                                             await Task.Delay(1000);
+                                            token.ThrowIfCancellationRequested();
                                         }
                                         else
                                         {
-                                            this.Invoke(new Action(() => Request(token, ck, mach, sl_max, date, pt, row)));
+                                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, sl_max, date, pt, row)));
                                         }
                                     }
                                     catch (NoSuchElementException)
                                     {
                                         driver.Navigate().Refresh();
                                         await Task.Delay(1000);
+                                        token.ThrowIfCancellationRequested();
                                     }
                                 }
-
-
                             }
                         }
                         catch (NoSuchElementException)
                         {
                             driver.Navigate().Refresh();
                             await Task.Delay(1000);
+                            token.ThrowIfCancellationRequested();
                         }
                     }
                 }
                 else
                 {
-                    Request(token, ck, mach, "1", date, pt, row);
+                    Request(tokenValue, ck, mach, "1", date, pt, row);
                 }
-
+            }
+            catch (OperationCanceledException)
+            {
+                // Handle the task cancellation here if needed
+                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Tác vụ đã bị hủy"));
             }
             catch (Exception ex)
             {
@@ -511,7 +522,7 @@ namespace AutoBuySJC
 
         }
 
-        async Task RunAll()
+        private async Task RunAll(CancellationToken token)
         {
             var dataGridViewData = new List<(string Name, string Cccd, string KhuVuc, string ChiNhanh, string PhuongThuc, DataGridViewRow Row)>();
             foreach (DataGridViewRow row in dgvAccount.Rows)
@@ -556,7 +567,7 @@ namespace AutoBuySJC
                 int xPosition = (i % columns) * (windowWidth + borderWidth);
                 int yPosition = (i / columns) * (windowHeight);
 
-                tasks.Add(Task.Run(() => GetCookieAsync(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.PhuongThuc, data.Row)));
+                tasks.Add(Task.Run(() => GetCookieAsync(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.PhuongThuc, data.Row, token), token));
             }
 
             await Task.WhenAll(tasks);
@@ -564,14 +575,23 @@ namespace AutoBuySJC
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            await RunAll();
-            for (int i = 0; i < numRepeat.Value; i++)
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
+            try
             {
-                int time_sleep = (int)numDelay.Value * 1000;
-                await Task.Delay(time_sleep);
-                await RunAll();
+                await RunAll(token);
+                for (int i = 0; i < numRepeat.Value; i++)
+                {
+                    int time_sleep = (int)numDelay.Value * 1000;
+                    await Task.Delay(time_sleep, token);
+                    await RunAll(token);
+                }
             }
-            //RunAll();
+            catch (OperationCanceledException)
+            {
+                MessageBox.Show("Đã dừng!!!");
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -638,6 +658,14 @@ namespace AutoBuySJC
         {
             DateTime targetTime = dtHenGio.Value;
             ScheduleRunAt(targetTime);
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+            }
         }
     }
 }

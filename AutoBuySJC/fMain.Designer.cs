@@ -54,6 +54,7 @@ namespace AutoBuySJC
             this.label3 = new System.Windows.Forms.Label();
             this.numDelay = new System.Windows.Forms.NumericUpDown();
             this.cbReloadRegion = new System.Windows.Forms.CheckBox();
+            this.btnStop = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAccount)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSpam)).BeginInit();
@@ -338,11 +339,22 @@ namespace AutoBuySJC
             this.cbReloadRegion.Text = "Reload đến khi CN mở";
             this.cbReloadRegion.UseVisualStyleBackColor = true;
             // 
+            // btnStop
+            // 
+            this.btnStop.Location = new System.Drawing.Point(226, 401);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(98, 46);
+            this.btnStop.TabIndex = 21;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
             // fMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(532, 482);
+            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.linkLabel1);
@@ -398,6 +410,7 @@ namespace AutoBuySJC
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown numRepeat;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnStop;
     }
 }
 
