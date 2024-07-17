@@ -47,6 +47,7 @@ namespace AutoBuySJC
             this.cbSpam = new System.Windows.Forms.CheckBox();
             this.numSpam = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbRepeat = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.numRepeat = new System.Windows.Forms.NumericUpDown();
@@ -129,7 +130,7 @@ namespace AutoBuySJC
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(15, 446);
+            this.button3.Location = new System.Drawing.Point(12, 465);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(94, 23);
             this.button3.TabIndex = 13;
@@ -139,7 +140,7 @@ namespace AutoBuySJC
             // 
             // btnOpenAccount
             // 
-            this.btnOpenAccount.Location = new System.Drawing.Point(115, 446);
+            this.btnOpenAccount.Location = new System.Drawing.Point(112, 465);
             this.btnOpenAccount.Name = "btnOpenAccount";
             this.btnOpenAccount.Size = new System.Drawing.Size(93, 23);
             this.btnOpenAccount.TabIndex = 14;
@@ -150,7 +151,7 @@ namespace AutoBuySJC
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(415, 459);
+            this.linkLabel1.Location = new System.Drawing.Point(406, 478);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(114, 13);
             this.linkLabel1.TabIndex = 15;
@@ -232,6 +233,7 @@ namespace AutoBuySJC
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbRepeat);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.numRepeat);
@@ -242,17 +244,28 @@ namespace AutoBuySJC
             this.groupBox2.Controls.Add(this.cbReload);
             this.groupBox2.Controls.Add(this.numSpam);
             this.groupBox2.Controls.Add(this.cbSpam);
-            this.groupBox2.Location = new System.Drawing.Point(358, 305);
+            this.groupBox2.Location = new System.Drawing.Point(360, 305);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(162, 151);
+            this.groupBox2.Size = new System.Drawing.Size(160, 168);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Tùy chọn";
             // 
+            // cbRepeat
+            // 
+            this.cbRepeat.AutoSize = true;
+            this.cbRepeat.Location = new System.Drawing.Point(6, 89);
+            this.cbRepeat.Name = "cbRepeat";
+            this.cbRepeat.Size = new System.Drawing.Size(44, 17);
+            this.cbRepeat.TabIndex = 26;
+            this.cbRepeat.Text = "Lặp";
+            this.cbRepeat.UseVisualStyleBackColor = true;
+            this.cbRepeat.CheckedChanged += new System.EventHandler(this.cbRepeat_CheckedChanged);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(112, 122);
+            this.label5.Location = new System.Drawing.Point(116, 142);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(21, 13);
             this.label5.TabIndex = 23;
@@ -261,7 +274,7 @@ namespace AutoBuySJC
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 122);
+            this.label6.Location = new System.Drawing.Point(10, 142);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(57, 13);
             this.label6.TabIndex = 25;
@@ -269,7 +282,7 @@ namespace AutoBuySJC
             // 
             // numRepeat
             // 
-            this.numRepeat.Location = new System.Drawing.Point(66, 118);
+            this.numRepeat.Location = new System.Drawing.Point(70, 138);
             this.numRepeat.Maximum = new decimal(new int[] {
             60,
             0,
@@ -292,7 +305,7 @@ namespace AutoBuySJC
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(112, 96);
+            this.label4.Location = new System.Drawing.Point(116, 116);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(26, 13);
             this.label4.TabIndex = 21;
@@ -301,7 +314,7 @@ namespace AutoBuySJC
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 96);
+            this.label3.Location = new System.Drawing.Point(10, 116);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(61, 13);
             this.label3.TabIndex = 22;
@@ -309,7 +322,7 @@ namespace AutoBuySJC
             // 
             // numDelay
             // 
-            this.numDelay.Location = new System.Drawing.Point(66, 92);
+            this.numDelay.Location = new System.Drawing.Point(70, 112);
             this.numDelay.Maximum = new decimal(new int[] {
             60,
             0,
@@ -341,7 +354,7 @@ namespace AutoBuySJC
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(226, 401);
+            this.btnStop.Location = new System.Drawing.Point(226, 427);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(98, 46);
             this.btnStop.TabIndex = 21;
@@ -353,7 +366,7 @@ namespace AutoBuySJC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(532, 482);
+            this.ClientSize = new System.Drawing.Size(532, 500);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -370,7 +383,7 @@ namespace AutoBuySJC
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "fMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Auto Buy Gold SJC v1.6";
+            this.Text = "Auto Buy Gold SJC v1.7";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAccount)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -411,6 +424,7 @@ namespace AutoBuySJC
         private System.Windows.Forms.NumericUpDown numRepeat;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.CheckBox cbRepeat;
     }
 }
 

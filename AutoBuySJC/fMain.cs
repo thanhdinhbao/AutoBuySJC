@@ -49,8 +49,11 @@ namespace AutoBuySJC
             btnOpenAccount.Enabled = false;
             btnStart.Enabled = false;
             btnHenGio.Enabled = false;
+            numDelay.Enabled = false;
+            numRepeat.Enabled = false;
         }
 
+        #region License
         private string RunCMD(string cmd)
         {
             Process cmdProcess;
@@ -159,6 +162,9 @@ namespace AutoBuySJC
             }
         }
 
+        #endregion
+
+        #region Processing
         private void ScheduleRunAt(DateTime targetTime)
         {
             // Tính thời gian còn lại từ bây giờ đến targetTime
@@ -216,6 +222,20 @@ namespace AutoBuySJC
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
+        }
+
+        public string ExtractSJCToken(string pageSource)
+        {
+            // Sử dụng biểu thức chính quy để tìm SJCToken
+            var regex = new Regex(@"SJCToken:'([^']*)'", RegexOptions.Compiled);
+            var match = regex.Match(pageSource);
+
+            if (match.Success)
+            {
+                return match.Groups[1].Value; // Trả về giá trị SJCToken
+            }
+
+            return null; // Nếu không tìm thấy SJCToken
         }
 
         private async Task GetCookieAsync(int winWidth, int winHeight, int x, int y, string name, string cccd, string makv, string mach, string pt, DataGridViewRow row, CancellationToken token)
@@ -283,6 +303,10 @@ namespace AutoBuySJC
                     ck += cookie.Name + "=" + cookie.Value + ";";
                 }
 
+                string pageSource = driver.PageSource;
+
+                string sjc_token = ExtractSJCToken(pageSource);
+
                 token.ThrowIfCancellationRequested();
 
                 // Check cả hai
@@ -314,7 +338,7 @@ namespace AutoBuySJC
                             // Nếu date_gd bằng tommorrow, gọi hàm Request
                             if (date_gd == tommorrow)
                             {
-                                this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
+                                this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, sjc_token, row)));
                             }
 
                             token.ThrowIfCancellationRequested();
@@ -328,7 +352,7 @@ namespace AutoBuySJC
                         // Thực hiện chức năng Spam
                         for (int i = 0; i < numSpam.Value; i++)
                         {
-                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
+                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, sjc_token, row)));
                             token.ThrowIfCancellationRequested();
                             await Task.Delay(1000);
                         }
@@ -361,7 +385,7 @@ namespace AutoBuySJC
                         // Nếu date_gd bằng tommorrow, gọi hàm Request
                         if (date_gd == tommorrow)
                         {
-                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
+                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, sjc_token, row)));
                         }
 
                         token.ThrowIfCancellationRequested();
@@ -374,7 +398,7 @@ namespace AutoBuySJC
                     // Thực hiện chức năng Spam
                     for (int i = 0; i < numSpam.Value; i++)
                     {
-                        this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, row)));
+                        this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, sjc_token, row)));
                         token.ThrowIfCancellationRequested();
                         await Task.Delay(1000);
                     }
@@ -436,7 +460,7 @@ namespace AutoBuySJC
                                         }
                                         else
                                         {
-                                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, sl_max, date, pt, row)));
+                                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, sl_max, date, pt, sjc_token, row)));
                                         }
                                     }
                                     catch (NoSuchElementException)
@@ -458,7 +482,7 @@ namespace AutoBuySJC
                 }
                 else
                 {
-                    Request(tokenValue, ck, mach, "1", date, pt, row);
+                    Request(tokenValue, ck, mach, "1", date, pt, sjc_token, row);
                 }
             }
             catch (OperationCanceledException)
@@ -480,7 +504,7 @@ namespace AutoBuySJC
             }
         }
 
-        async void Request(string token, string ck, string ch, string sl, string ngaygd, string pt, DataGridViewRow row)
+        async void Request(string token, string ck, string ch, string sl, string ngaygd, string pt, string sjctoken, DataGridViewRow row)
         {
             var options = new RestClientOptions()
             {
@@ -502,7 +526,7 @@ namespace AutoBuySJC
             request.AddHeader("sec-fetch-mode", "cors");
             request.AddHeader("sec-fetch-site", "same-origin");
             request.AddHeader("x-requested-with", "XMLHttpRequest");
-            var body = string.Format("__RequestVerificationToken={0}&CuaHang={1}&SoLuong={2}&NgayGiaoDich={3}&HinhThuc={4}", token, ch, sl, ngaygd, pt);
+            var body = string.Format("__RequestVerificationToken={0}&CuaHang={1}&SoLuong={2}&NgayGiaoDich={3}&HinhThuc={4}&SJCToken={5}", token, ch, sl, ngaygd, pt, sjctoken);
             //var body = @"__RequestVerificationToken=zuNkz5EJA4iGgrE7SBJOBV3oGPjBs9W4NWnD8zLrklZfpmi83k3X1t53xjbaoJUCh44loXK6RPEaLOyDyi-35cmrUkONw8xIjZxC1dBUTMbDpTAvlOR-evf6I3wuXFNy0&CuaHang=6&SoLuong=1&NgayGiaoDich=2024-07-01&HinhThuc=1";
             request.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
             RestResponse response = await client.ExecuteAsync(request);
@@ -573,6 +597,10 @@ namespace AutoBuySJC
             await Task.WhenAll(tasks);
         }
 
+        #endregion
+
+        #region Event
+
         private async void button1_Click(object sender, EventArgs e)
         {
             _cancellationTokenSource = new CancellationTokenSource();
@@ -580,13 +608,21 @@ namespace AutoBuySJC
 
             try
             {
-                await RunAll(token);
-                for (int i = 0; i < numRepeat.Value; i++)
+                if (cbRepeat.Checked)
                 {
-                    int time_sleep = (int)numDelay.Value * 1000;
-                    await Task.Delay(time_sleep, token);
+                    await RunAll(token);
+                    for (int i = 0; i < numRepeat.Value; i++)
+                    {
+                        int time_sleep = (int)numDelay.Value * 1000;
+                        await Task.Delay(time_sleep, token);
+                        await RunAll(token);
+                    }
+                }
+                else
+                {
                     await RunAll(token);
                 }
+
             }
             catch (OperationCanceledException)
             {
@@ -667,5 +703,22 @@ namespace AutoBuySJC
                 _cancellationTokenSource.Cancel();
             }
         }
+
+        private void cbRepeat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbRepeat.Checked)
+            {
+                numDelay.Enabled = true;
+                numRepeat.Enabled = true;
+            }
+            else
+            {
+                numDelay.Enabled = false;
+                numRepeat.Enabled = false;
+            }
+
+        }
+
+        #endregion
     }
 }
