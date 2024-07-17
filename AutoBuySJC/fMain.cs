@@ -411,7 +411,21 @@ namespace AutoBuySJC
                     {
                         try
                         {
-                            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("id_area")));
+                            while (true)
+                            {
+                                try
+                                {
+                                    var wait_kv = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                                    wait_kv.Until(ExpectedConditions.ElementIsVisible(By.Id("id_area")));
+                                    break; // Thoát khỏi vòng lặp khi phần tử được tìm thấy
+                                }
+                                catch (WebDriverTimeoutException)
+                                {
+                                    driver.Navigate().Refresh();
+                                    await Task.Delay(500);
+                                    token.ThrowIfCancellationRequested();
+                                }
+                            }
 
                             var select_kv = new SelectElement(driver.FindElement(By.Id("id_area")));
                             foreach (var option in select_kv.Options)
