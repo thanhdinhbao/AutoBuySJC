@@ -226,21 +226,21 @@ namespace AutoBuySJC
 
         public string ExtractSJCToken(string pageSource)
         {
-            // Sử dụng biểu thức chính quy để tìm SJCToken
-            var regex = new Regex(@"SJCToken:'([^']*)'", RegexOptions.Compiled);
-            var match = regex.Match(pageSource);
-
+            string pattern = @"SJCToken:'(?<token>[a-f0-9\-]+)'";
+            Match match = Regex.Match(pageSource, pattern);
             if (match.Success)
             {
-                return match.Groups[1].Value; // Trả về giá trị SJCToken
+                string sjcToken = match.Groups["token"].Value;
+                return sjcToken;
             }
 
-            return null; // Nếu không tìm thấy SJCToken
+            return null; 
         }
 
         private async Task GetCookieAsync(int winWidth, int winHeight, int x, int y, string name, string cccd, string makv, string mach, string pt, DataGridViewRow row, CancellationToken token)
         {
             ChromeDriver driver = null;
+            string tokenValue = "";
             try
             {
                 string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -257,6 +257,7 @@ namespace AutoBuySJC
 
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
 
+                //Login
                 var name_box = wait.Until(ExpectedConditions.ElementIsVisible(By.Name("name")));
                 name_box.SendKeys(name);
 
@@ -266,6 +267,7 @@ namespace AutoBuySJC
                 var submit_btn = wait.Until(ExpectedConditions.ElementIsVisible(By.Id("sign_in_submit")));
                 submit_btn.Click();
 
+                //Kiem tra dang nhap hơp le
                 try
                 {
                     var wait_msg = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
@@ -282,19 +284,51 @@ namespace AutoBuySJC
                 }
 
                 token.ThrowIfCancellationRequested();
-
-                try
+                while (true)
                 {
-                    wait.Until(ExpectedConditions.ElementIsVisible(By.Id("id_area")));
+                    try
+                    {
+                        var wait_kv = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
+                        wait_kv.Until(ExpectedConditions.ElementIsVisible(By.Id("id_area")));
+                        break;
+                    }
+                    catch (WebDriverTimeoutException)
+                    {
+                        driver.Navigate().Refresh();
+                        await Task.Delay(500);
+                        token.ThrowIfCancellationRequested();
+                    }
                 }
-                catch
+
+                // Get VeriToken
+                while (true)
                 {
-
+                    try
+                    {
+                        tokenValue = (string)driver.ExecuteScript("return $('input[name=\"__RequestVerificationToken\"]').val();");
+                        break;
+                    }
+                    catch (WebDriverException ex)
+                    {
+                        if (ex.Message.Contains("ERR_HTTP2_SERVER_REFUSED_STREAM"))
+                        {
+                            driver.Navigate().Refresh();
+                            await Task.Delay(500);
+                            token.ThrowIfCancellationRequested();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
-                driver.Navigate().Refresh();
 
-                string tokenValue = (string)driver.ExecuteScript("return $('input[name=\"__RequestVerificationToken\"]').val();");
+                //Get SJCToken update v1.7
+                string pageSource = driver.PageSource;
 
+                string sjc_token = ExtractSJCToken(pageSource);
+
+                //Get All Cookie
                 var cookies = driver.Manage().Cookies.AllCookies;
 
                 string ck = string.Empty;
@@ -303,9 +337,7 @@ namespace AutoBuySJC
                     ck += cookie.Name + "=" + cookie.Value + ";";
                 }
 
-                string pageSource = driver.PageSource;
 
-                string sjc_token = ExtractSJCToken(pageSource);
 
                 token.ThrowIfCancellationRequested();
 
@@ -415,7 +447,7 @@ namespace AutoBuySJC
                             {
                                 try
                                 {
-                                    var wait_kv = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                                    var wait_kv = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
                                     wait_kv.Until(ExpectedConditions.ElementIsVisible(By.Id("id_area")));
                                     break; // Thoát khỏi vòng lặp khi phần tử được tìm thấy
                                 }
@@ -451,7 +483,8 @@ namespace AutoBuySJC
                                 {
                                     try
                                     {
-                                        select_kv.SelectByValue(makv);
+                                        var select_kv1 = new SelectElement(driver.FindElement(By.Id("id_area")));
+                                        select_kv1.SelectByValue(makv);
                                         wait.Until(ExpectedConditions.ElementIsVisible(By.Id("id_store")));
                                         var select_cn = new SelectElement(driver.FindElement(By.Id("id_store")));
                                         foreach (var option in select_cn.Options)
@@ -459,14 +492,12 @@ namespace AutoBuySJC
                                             if (option.GetAttribute("value") == mach)
                                             {
                                                 select_cn.SelectByValue(mach);
-                                                var sl = wait.Until(ExpectedConditions.ElementIsVisible(By.Id("txtSoLuongToiDa")));
-                                                sl_max = sl.Text;
                                                 cn_open = true;
                                                 break;
                                             }
                                         }
 
-                                        if (!optionFound)
+                                        if (!cn_open)
                                         {
                                             driver.Navigate().Refresh();
                                             await Task.Delay(1000);
@@ -474,7 +505,7 @@ namespace AutoBuySJC
                                         }
                                         else
                                         {
-                                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, sl_max, date, pt, sjc_token, row)));
+                                            this.Invoke(new Action(() => Request(tokenValue, ck, mach, "1", date, pt, sjc_token, row)));
                                         }
                                     }
                                     catch (NoSuchElementException)
@@ -544,18 +575,25 @@ namespace AutoBuySJC
             //var body = @"__RequestVerificationToken=zuNkz5EJA4iGgrE7SBJOBV3oGPjBs9W4NWnD8zLrklZfpmi83k3X1t53xjbaoJUCh44loXK6RPEaLOyDyi-35cmrUkONw8xIjZxC1dBUTMbDpTAvlOR-evf6I3wuXFNy0&CuaHang=6&SoLuong=1&NgayGiaoDich=2024-07-01&HinhThuc=1";
             request.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
             RestResponse response = await client.ExecuteAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (response != null)
             {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi web SJC!"));
-            }
-            else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-            {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi web SJC!"));
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
+                }
+                else
+                {
+                    Result.Root json = JsonConvert.DeserializeObject<Result.Root>(response.Content);
+                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = json.StatusText));
+                }
             }
             else
             {
-                Result.Root json = JsonConvert.DeserializeObject<Result.Root>(response.Content);
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = json.StatusText));
+                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
             }
 
         }
@@ -606,9 +644,13 @@ namespace AutoBuySJC
                 int yPosition = (i / columns) * (windowHeight);
 
                 tasks.Add(Task.Run(() => GetCookieAsync(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.PhuongThuc, data.Row, token), token));
-            }
+                //Delay giữa các task tránh spam
+                if (i < rowCount - 1)
+                {
+                    await Task.Delay(3000);
+                }
 
-            await Task.WhenAll(tasks);
+            }
         }
 
         #endregion
@@ -617,6 +659,15 @@ namespace AutoBuySJC
 
         private async void button1_Click(object sender, EventArgs e)
         {
+
+            foreach (DataGridViewRow row in dgvAccount.Rows)
+            {
+                if (row.Cells["Trạng thái"] != null)
+                {
+                    row.Cells["Trạng thái"].Value = string.Empty;
+                }
+            }
+
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
 
