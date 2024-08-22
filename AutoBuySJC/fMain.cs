@@ -126,18 +126,18 @@ namespace AutoBuySJC
                 bool flag3 = days <= 0;
                 if (flag3)
                 {
-                    MessageBox.Show("Vui lòng liên hệ admin để gia hạn.", "Phần mềm hết hạn" + days, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    //MessageBox.Show("Vui lòng liên hệ admin để gia hạn.", "Phần mềm hết hạn" + days, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     Application.Exit();
                 }
                 else
                 {
-                    MessageBox.Show("Đăng Nhập Thành Công !", "Còn lại: " + days + " ngày!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    //MessageBox.Show("Đăng Nhập Thành Công !", "Còn lại: " + days + " ngày!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 }
             }
 
             else
             {
-                MessageBox.Show(string.Format("Bạn chưa mua bản quyền tool, vui lòng bấm Ctrl + C và gửi mã \"{0}\" cho chúng tôi để kích hoạt tool, bấm OK để sao chép key!", keys), "Thông báo active bản quyền!", MessageBoxButtons.OK);
+                //MessageBox.Show(string.Format("Bạn chưa mua bản quyền tool, vui lòng bấm Ctrl + C và gửi mã \"{0}\" cho chúng tôi để kích hoạt tool, bấm OK để sao chép key!", keys), "Thông báo active bản quyền!", MessageBoxButtons.OK);
                 Clipboard.SetText(keys);
                 //Environment.Exit(Environment.ExitCode);
                 Application.Exit();
@@ -157,6 +157,8 @@ namespace AutoBuySJC
                 numSpam.Value = controlValues.NumSpam;
                 numRepeat.Value = controlValues.NumRepeat;
                 numDelay.Value = controlValues.NumDelay;
+                numMinDelay.Value = controlValues.NumMinDelay;
+                numMaxDelay.Value = controlValues.NumMaxDelay;
                 cbReload.Checked = controlValues.CbReload;
                 cbSpam.Checked = controlValues.CbSpam;
                 cbReloadRegion.Checked = controlValues.CbReloadRegion;
@@ -168,6 +170,19 @@ namespace AutoBuySJC
                 {
                     cbRepeat.Enabled = false;
                 }
+
+                if (cbSpam.Checked)
+                {
+                    numSpam.Enabled = true;
+                    numMinDelay.Enabled = true;
+                    numMaxDelay.Enabled = true;
+                }
+                else
+                {
+                    numSpam.Enabled = false;
+                    numMinDelay.Enabled = false;
+                    numMaxDelay.Enabled = false;
+                }
             }
         }
 
@@ -178,6 +193,8 @@ namespace AutoBuySJC
                 NumSpam = numSpam.Value,
                 NumRepeat = numRepeat.Value,
                 NumDelay = numDelay.Value,
+                NumMinDelay = numMinDelay.Value,
+                NumMaxDelay = numMaxDelay.Value,
                 CbReload = cbReload.Checked,
                 CbSpam = cbSpam.Checked,
                 CbReloadRegion = cbReloadRegion.Checked,
@@ -220,6 +237,12 @@ namespace AutoBuySJC
             });
             th.Start();
         }
+
+        void UpdateStatus(DataGridViewRow row, string status)
+        {
+            Invoke(new Action(() => row.Cells["Trạng thái"].Value = status));
+        }
+
         private void ScheduleRunAt(DateTime targetTime)
         {
             // Tính thời gian còn lại từ bây giờ đến targetTime
@@ -236,7 +259,7 @@ namespace AutoBuySJC
                 // Khởi tạo Timer
                 timer = new System.Threading.Timer((state) =>
                 {
-                    button1_Click(null, null);
+                    btnStart_Click(null, null);
 
                 }, null, (int)delayTime.TotalMilliseconds, Timeout.Infinite);
                 MessageBox.Show("Đã đặt hẹn giờ chạy chương trình đến " + targetTime.ToString());
@@ -329,12 +352,12 @@ namespace AutoBuySJC
                     var msg = wait_msg.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/div[2]/div/div[2]")));
                     if (msg.Text.Contains("Thông tin đăng nhập không đúng"))
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Thông tin đăng nhập không đúng hoặc bị lock acc!"));
+                        UpdateStatus(row, "Thông tin đăng nhập không đúng hoặc bị lock acc!");
                         return;
                     }
                     else if (msg.Text.Contains("Có lỗi xảy ra"))
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Có lỗi xảy ra!"));
+                        UpdateStatus(row, "Có lỗi xảy ra!");
                         return;
                     }
                 }
@@ -494,12 +517,11 @@ namespace AutoBuySJC
             }
             catch (OperationCanceledException)
             {
-                // Handle the task cancellation here if needed
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Tác vụ đã bị hủy"));
+                UpdateStatus(row, "Tác vụ đã bị hủy");
             }
             catch (Exception ex)
             {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = ex.Message));
+                UpdateStatus(row, ex.Message);
             }
             finally
             {
@@ -548,12 +570,12 @@ namespace AutoBuySJC
                     var msg = wait_msg.Until(ExpectedConditions.ElementIsVisible(By.XPath("/html/body/div[2]/div/div[2]")));
                     if (msg.Text.Contains("Thông tin đăng nhập không đúng"))
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Thông tin đăng nhập không đúng hoặc bị lock acc!"));
+                        UpdateStatus(row, "Thông tin đăng nhập không đúng hoặc bị lock acc!");
                         return;
                     }
                     else if (msg.Text.Contains("Có lỗi xảy ra"))
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Có lỗi xảy ra!"));
+                        UpdateStatus(row, "Có lỗi xảy ra!");
                         return;
                     }
                 }
@@ -657,11 +679,11 @@ namespace AutoBuySJC
             catch (OperationCanceledException)
             {
                 // Handle the task cancellation here if needed
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Tác vụ đã bị hủy"));
+                UpdateStatus(row, "Tác vụ đã bị hủy");
             }
             catch (Exception ex)
             {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = ex.Message));
+                UpdateStatus(row, ex.Message);
             }
             finally
             {
@@ -698,35 +720,50 @@ namespace AutoBuySJC
             var body = string.Format("__RequestVerificationToken={0}&CuaHang={1}&SoLuong={2}&NgayGiaoDich={3}&HinhThuc={4}&SJCToken={5}", token, ch, sl, ngaygd, pt, sjctoken);
             //var body = @"__RequestVerificationToken=zuNkz5EJA4iGgrE7SBJOBV3oGPjBs9W4NWnD8zLrklZfpmi83k3X1t53xjbaoJUCh44loXK6RPEaLOyDyi-35cmrUkONw8xIjZxC1dBUTMbDpTAvlOR-evf6I3wuXFNy0&CuaHang=6&SoLuong=1&NgayGiaoDich=2024-07-01&HinhThuc=1";
             request.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
-            RestResponse response = await client.ExecuteAsync(request);
-            if (response != null)
+            RestResponse response = null;
+            do
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                response = await client.ExecuteAsync(request);
+
+                if (response != null)
                 {
-                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi web SJC!"));
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
-                }
-                else
-                {
-                    Result.Root json = JsonConvert.DeserializeObject<Result.Root>(response.Content);
-                    if (json.StatusCode == 1)
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Đặt thành công!"));
+                        UpdateStatus(row, "Lỗi web SJC!");
+                        break;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                    {
+                        UpdateStatus(row, "Lỗi server, thử lại!");
+                        break;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.BadGateway)
+                    {
+                        await Task.Delay(1000);
                     }
                     else
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = json.StatusText));
+                        Result.Root json = JsonConvert.DeserializeObject<Result.Root>(response.Content);
+                        if (json.StatusCode == 1)
+                        {
+                            UpdateStatus(row, "Đặt thành công!");
+                            throw new Exception("ĐẶT THÀNH CÔNG!!!");
+                            break;
+                        }
+                        else
+                        {
+                            UpdateStatus(row, json.StatusText);
+                            break;
+                        }
                     }
-
                 }
-            }
-            else
-            {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
-            }
+                else
+                {
+                    UpdateStatus(row, "Lỗi server, thử lại!");
+                    await Task.Delay(2000);
+                }
+
+            } while (response == null || response.StatusCode == System.Net.HttpStatusCode.BadGateway);
 
         }
 
@@ -826,13 +863,25 @@ namespace AutoBuySJC
                 var data = dataGridViewData[i];
                 int xPosition = (i % columns) * (windowWidth + borderWidth);
                 int yPosition = (i / columns) * (windowHeight);
-
-                tasks.Add(Task.Run(() => ReloadRegion(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.PhuongThuc, data.Row, token), token));
-                //Delay giữa các task tránh spam
-                if (i < rowCount - 1)
+                try
                 {
-                    await Task.Delay(3000);
+                    // Run task and wait for it to complete before moving to the next
+                    await Task.Run(() => ReloadRegion(windowWidth, windowHeight, xPosition, yPosition, data.Name, data.Cccd, data.KhuVuc, data.ChiNhanh, data.PhuongThuc, data.Row, token), token);
                 }
+                catch (OperationCanceledException)
+                {
+                    UpdateStatus(data.Row, "Tác vụ bị hủy.");
+                    throw new Exception("Tác vụ bị hủy.");
+                }
+                catch (Exception ex)
+                {
+                    UpdateStatus(data.Row, "Error: " + ex.Message);
+                    throw new Exception(ex.Message);
+                }
+                //if (i < rowCount - 1)
+                //{
+                //    await Task.Delay(5000);
+                //}
             }
         }
 
@@ -841,9 +890,32 @@ namespace AutoBuySJC
         private async Task<string> GetVeriToken(CancellationToken cancellationToken)
         {
             string veri_token = string.Empty;
+            RestResponse response = null;
             var client = new RestClient("https://tructuyen.sjc.com.vn/");
             var request = new RestRequest("/", Method.Get);
-            RestResponse response = await client.ExecuteAsync(request, cancellationToken);
+
+
+            while (response == null || string.IsNullOrEmpty(response.Content))
+            {
+                try
+                {
+                    response = await client.ExecuteAsync(request, cancellationToken);
+
+                    if (response == null || string.IsNullOrEmpty(response.Content) || !response.IsSuccessful)
+                    {
+                        await Task.Delay(1000, cancellationToken);
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    throw new Exception("Tác vụ bị hủy.");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+
             string pattern = @"<input[^>]*name=""__RequestVerificationToken""[^>]*value=""([^""]*)""[^>]*>";
 
             Regex regex = new Regex(pattern);
@@ -867,7 +939,31 @@ namespace AutoBuySJC
             request.AddParameter("CCCD", cccd);
             request.AddParameter("Remember", "true");
             request.AddParameter("__RequestVerificationToken", veri_token);
-            RestResponse response = await client.ExecuteAsync(request, cancellationToken);
+
+            RestResponse response = null;
+
+            while (response == null || response.Content == null || !response.IsSuccessful)
+            {
+                try
+                {
+                    response = await client.ExecuteAsync(request, cancellationToken);
+
+                    if (response == null || response.Content == null || !response.IsSuccessful)
+                    {
+                        // Nếu response null, content rỗng hoặc không thành công, chờ 1 giây trước khi thử lại
+                        await Task.Delay(1000, cancellationToken);
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    UpdateStatus(row, "Tác vụ bị hủy.");
+                    throw new Exception("Tác vụ bị hủy.");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
 
             if (response.IsSuccessful && response.Content != null)
             {
@@ -882,17 +978,19 @@ namespace AutoBuySJC
                 }
                 else if (json.StatusCode == 5)
                 {
-                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Thông tin đăng nhập không đúng hoặc bị ban acc!"));
+                    UpdateStatus(row, "Thông tin đăng nhập không đúng hoặc bị ban acc!");
+                    throw new Exception("Thông tin đăng nhập không đúng hoặc bị ban acc!");
                 }
                 else
                 {
-                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi không xác định!"));
+                    UpdateStatus(row, "Lỗi không xác định!");
                 }
             }
             else
             {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi không xác định!"));
+                UpdateStatus(row, "Lỗi không xác định!");
             }
+
             return ck;
         }
 
@@ -901,7 +999,29 @@ namespace AutoBuySJC
             var client = new RestClient();
             var request = new RestRequest("https://tructuyen.sjc.com.vn/", Method.Get);
             request.AddHeader("Cookie", Cookie);
-            RestResponse response = await client.ExecuteAsync(request, cancellationToken);
+            RestResponse response = null;
+
+            while (response == null || response.Content == null || !response.IsSuccessful)
+            {
+                try
+                {
+                    response = await client.ExecuteAsync(request, cancellationToken);
+
+                    if (response == null || response.Content == null || !response.IsSuccessful)
+                    {
+                        // Nếu response null, content rỗng hoặc không thành công, chờ 1 giây trước khi thử lại
+                        await Task.Delay(1000, cancellationToken);
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    throw new Exception("Tác vụ bị hủy.");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
 
             string sjcToken = null;
             string veri_token = null;
@@ -941,7 +1061,7 @@ namespace AutoBuySJC
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
             };
             var client = new RestClient(options);
-            var request = new RestRequest("https://tructuyen.sjc.com.vn/Home/LayPhieuMuaHang", Method.Post);
+            var request = new RestRequest("https://tructuyen.sjc.com.vn/Booking/GetBooking", Method.Post);
             request.AddHeader("accept", "*/*");
             request.AddHeader("accept-language", "en-US,en;q=0.9,vi;q=0.8,ar;q=0.7,de;q=0.6");
             request.AddHeader("content-type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -956,36 +1076,59 @@ namespace AutoBuySJC
             request.AddHeader("sec-fetch-mode", "cors");
             request.AddHeader("sec-fetch-site", "same-origin");
             request.AddHeader("x-requested-with", "XMLHttpRequest");
-            string body = string.Format("__RequestVerificationToken={0}&CuaHang={1}&SoLuong=1&NgayGiaoDich={2}&HinhThuc={3}&SJCToken={4}", veri_token, ch, date, ht, sjc_token);
+            string body = string.Format("__RequestVerificationToken={0}&Store={1}&Quantity=1&Method={2}&SJCToken={3}&Price=80000000", veri_token, ch, ht, sjc_token);
             request.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
-            RestResponse response = await client.ExecuteAsync(request, cancellationToken);
+            RestResponse response = null;
 
-            if (response != null)
+            // Loop until a valid response is received
+            while (response == null || response.Content == null || response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                try
                 {
-                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi web SJC!"));
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
-                }
-                else
-                {
-                    Result.Root json = JsonConvert.DeserializeObject<Result.Root>(response.Content);
-                    if (json.StatusCode == 1)
+                    response = await client.ExecuteAsync(request, cancellationToken);
+
+                    if (response != null)
                     {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Đặt thành công!"));
-                    }
-                    else
-                    {
-                        Invoke(new Action(() => row.Cells["Trạng thái"].Value = json.StatusText));
+                        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        {
+                            UpdateStatus(row, "Lỗi web SJC!");
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                        {
+                            UpdateStatus(row, "Lỗi server, thử lại!");
+                        }
+                        else if (response.Content != null)
+                        {
+                            Result.Root json = JsonConvert.DeserializeObject<Result.Root>(response.Content);
+                            if (json.StatusCode == 1)
+                            {
+                                UpdateStatus(row, "Đặt thành công!");
+                                throw new Exception("ĐẶT THÀNH CÔNG!!!");
+                                break;
+                            }
+                            else
+                            {
+                                UpdateStatus(row, json.StatusText);
+                            }
+                        }
+                        else
+                        {
+                            UpdateStatus(row, "Lỗi server, đang thử lại!");
+                        }
                     }
                 }
-            }
-            else
-            {
-                Invoke(new Action(() => row.Cells["Trạng thái"].Value = "Lỗi server, thử lại!"));
+                catch (TaskCanceledException)
+                {
+                    UpdateStatus(row, "Tác vụ bị hủy.");
+                    throw new Exception("Tác vụ bị hủy.");
+                }
+                catch (Exception ex)
+                {
+                    UpdateStatus(row, "Error: " + ex.Message);
+                    throw new Exception(ex.Message);
+                }
+
+                await Task.Delay(1000, cancellationToken);
             }
         }
 
@@ -1009,45 +1152,35 @@ namespace AutoBuySJC
 
             var tasks = new List<Task>();
 
-            // Loop through the data and run the sequence of methods asynchronously
+
             foreach (var data in dataGridViewData)
             {
-                tasks.Add(Task.Run(async () =>
+                try
                 {
-                    try
-                    {
-                        // Check for cancellation before starting
-                        cancellationToken.ThrowIfCancellationRequested();
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                        // Get verification token
-                        string tk = await GetVeriToken(cancellationToken);
+                    string tk = await GetVeriToken(cancellationToken);
 
-                        // Get cookie using the verification token
-                        string ck = await GetCookie(data.Name, data.Cccd, tk, data.Row, cancellationToken);
+                    string ck = await GetCookie(data.Name, data.Cccd, tk, data.Row, cancellationToken);
 
-                        // Get additional tokens using the cookie
-                        string[] tokenData = await GetToken(ck, cancellationToken);
+                    string[] tokenData = await GetToken(ck, cancellationToken);
 
-                        // Concatenate the new cookie with the existing one
-                        ck += tokenData[0];
+                    ck += tokenData[0];
 
-                        // Place the order using the tokens
-                        await GetOrder(ck, tokenData[1], data.ChiNhanh, data.PhuongThuc, tokenData[2], data.Row, cancellationToken);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // Handle task cancellation
-                        Invoke(new Action(() => data.Row.Cells["Trạng thái"].Value = "Operation canceled"));
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle other exceptions and update DataGridView row status
-                        Invoke(new Action(() => data.Row.Cells["Trạng thái"].Value = "Error: " + ex.Message));
-                    }
-                }, cancellationToken));
+                    await GetOrder(ck, tokenData[1], data.ChiNhanh, data.PhuongThuc, tokenData[2], data.Row, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    UpdateStatus(data.Row, "Tác vụ bị hủy.");
+                }
+                catch (Exception ex)
+                {
+
+                    UpdateStatus(data.Row, "Error: " + ex.Message);
+                }
+
+                await Task.Delay(1000, cancellationToken);
             }
-
-            await Task.WhenAll(tasks);
         }
 
 
@@ -1071,20 +1204,16 @@ namespace AutoBuySJC
                 MessageBox.Show("Không thể lấy thông tin key!");
             }
 
-            groupBox2.Enabled = false;
+            groupSetting.Enabled = false;
             btnOpenAccount.Enabled = false;
             btnStart.Enabled = false;
             btnHenGio.Enabled = false;
             numDelay.Enabled = false;
             numRepeat.Enabled = false;
-            numMinDelay.Enabled = false;
-            numMaxDelay.Enabled = false;
-            numSpam.Enabled = false;
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {
-
             foreach (DataGridViewRow row in dgvAccount.Rows)
             {
                 if (row.Cells["Trạng thái"] != null)
@@ -1113,7 +1242,7 @@ namespace AutoBuySJC
                                 {
                                     foreach (DataGridViewRow row in dgvAccount.Rows)
                                     {
-                                        row.Cells["Trạng thái"].Value = $"Mua lại sau {remainingTime} seconds";
+                                        UpdateStatus(row, $"Mua lại sau {remainingTime} giây");
                                     }
                                 }));
                                 await Task.Delay(1000);
@@ -1123,7 +1252,7 @@ namespace AutoBuySJC
                             {
                                 foreach (DataGridViewRow row in dgvAccount.Rows)
                                 {
-                                    row.Cells["Trạng thái"].Value = "Chuẩn bị lượt mua tiếp theo...";
+                                    UpdateStatus(row, "Chuẩn bị lượt mua tiếp theo...");
                                 }
                             }));
                             await RunAllChromeRegion(token);
@@ -1135,7 +1264,7 @@ namespace AutoBuySJC
                         {
                             foreach (DataGridViewRow row in dgvAccount.Rows)
                             {
-                                row.Cells["Trạng thái"].Value = "Chuẩn bị mua...";
+                                UpdateStatus(row, "Chuẩn bị mua...");
                             }
                         }));
                         await RunAllChromeRegion(token);
@@ -1173,7 +1302,7 @@ namespace AutoBuySJC
                             {
                                 foreach (DataGridViewRow row in dgvAccount.Rows)
                                 {
-                                    row.Cells["Trạng thái"].Value = $"Delay: {time / 1000} giây";
+                                    UpdateStatus(row, $"Delay: {time / 1000} giây");
                                 }
                             }));
 
@@ -1185,7 +1314,7 @@ namespace AutoBuySJC
                                 {
                                     foreach (DataGridViewRow row in dgvAccount.Rows)
                                     {
-                                        row.Cells["Trạng thái"].Value = $"Mua lại sau {remainingTime} giây";
+                                        UpdateStatus(row, $"Mua lại sau {remainingTime} giây");
                                     }
                                 }));
 
@@ -1197,7 +1326,7 @@ namespace AutoBuySJC
                             {
                                 foreach (DataGridViewRow row in dgvAccount.Rows)
                                 {
-                                    row.Cells["Trạng thái"].Value = "Chuẩn bị lượt mua tiếp theo...";
+                                    UpdateStatus(row, "Chuẩn bị lượt mua tiếp theo...");
                                 }
                             }));
 
@@ -1220,7 +1349,8 @@ namespace AutoBuySJC
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+
+        private void btnImport_Click(object sender, EventArgs e)
         {
             OpenFileDialog theDialog = new OpenFileDialog();
             theDialog.Title = "Open Text File";
@@ -1235,7 +1365,7 @@ namespace AutoBuySJC
                     btnOpenAccount.Enabled = true;
                     btnStart.Enabled = true;
                     btnHenGio.Enabled = true;
-                    groupBox2.Enabled = true;
+                    groupSetting.Enabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -1244,7 +1374,7 @@ namespace AutoBuySJC
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnHuongDan_Click(object sender, EventArgs e)
         {
             fHuongDan frm = new fHuongDan();
             frm.ShowDialog();
@@ -1265,7 +1395,7 @@ namespace AutoBuySJC
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void btnOpenAccount_Click(object sender, EventArgs e)
         {
             Process.Start("notepad.exe", txtPath.Text);
             Process notepadProcess = new Process();
@@ -1274,11 +1404,6 @@ namespace AutoBuySJC
             notepadProcess.EnableRaisingEvents = true;
             notepadProcess.Exited += NotepadProcess_Exited;
             notepadProcess.Start();
-        }
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start("chrome.exe", "https://www.facebook.com/thanhdinhbao.k20");
         }
 
         private void btnHenGio_Click(object sender, EventArgs e)
@@ -1295,6 +1420,16 @@ namespace AutoBuySJC
             }
         }
 
+        private void cbReload_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbReload.Checked)
+            {
+                cbSpam.Checked = false;
+                cbReloadRegion.Checked = false;
+            }
+
+        }
+
         private void cbSpam_CheckedChanged(object sender, EventArgs e)
         {
             if (cbSpam.Checked)
@@ -1302,6 +1437,8 @@ namespace AutoBuySJC
                 numMinDelay.Enabled = true;
                 numMaxDelay.Enabled = true;
                 numSpam.Enabled = true;
+                cbReloadRegion.Checked = false;
+                cbReload.Checked = false;
             }
             else
             {
@@ -1331,6 +1468,8 @@ namespace AutoBuySJC
             if (cbReloadRegion.Checked)
             {
                 cbRepeat.Enabled = true;
+                cbSpam.Checked = false;
+                cbReload.Checked = false;
             }
             else
             {
@@ -1343,8 +1482,9 @@ namespace AutoBuySJC
             SaveSettings();
         }
 
+
+
+
         #endregion
-
-
     }
 }

@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoBuySJC", "AutoBuySJC\AutoBuySJC.csproj", "{EEA272EE-2FC2-428D-BFE3-B59DE1F70FBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SJCToolUpdater", "SJCToolUpdater\SJCToolUpdater.csproj", "{69C516A7-096C-4EA2-A488-7F9FE75AC47B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{EEA272EE-2FC2-428D-BFE3-B59DE1F70FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA272EE-2FC2-428D-BFE3-B59DE1F70FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA272EE-2FC2-428D-BFE3-B59DE1F70FBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69C516A7-096C-4EA2-A488-7F9FE75AC47B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69C516A7-096C-4EA2-A488-7F9FE75AC47B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69C516A7-096C-4EA2-A488-7F9FE75AC47B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69C516A7-096C-4EA2-A488-7F9FE75AC47B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
